@@ -1,0 +1,63 @@
+_____________ _____________ _____________ _____________ _____________
+ROOT build.gradle
+
+task makeZipOfAllModules(type: Zip) {
+    println("makeZipOfAllModules:___________>>>>>>\t")
+    println("$rootDir")
+   
+    archiveName 'all-module.zip'
+    from "$rootDir"
+    // from "$rootDir/java-module/build/libs/"
+    // from "$rootDir/node-module/build/distributions"
+    // exclude '*gradle*'
+    // exclude '**/build'
+    include 'java-module/build/libs/java-module.jar'
+    include 'node-module/build/distributions/node-module.zip'
+    // include '*/*'
+    // destinationDir(file("$rootDir/zip"))
+}
+
+tasks.assemble.dependsOn tasks.makeZipOfAllModules
+tasks.makeZipOfAllModules.dependsOn ':node-module:build'
+tasks.makeZipOfAllModules.dependsOn ':java-module:build'
+
+_____________ _____________ _____________ _____________ _____________
+
+NODE-MODULE build.gradle
+
+task deleteNodeModules(type: Delete) {
+    println('deleteNodeModules:___________>>>>>>\t')
+
+    doFirst {
+        println('deleteNodeModules:___________ DO FIRST')
+
+    }
+    delete "$rootDir/node-module/node_modules"
+    delete "$rootDir/node-module/package-lock.json"
+}
+
+task makeZipOfNodeModule(type: Zip) {
+    println('makeZipOfNodeModule:___________>>>>>>\t')
+   
+    archiveName 'node-module.zip'
+    from "$rootDir/node-module"
+    include '*'
+    include '*/*'
+    exclude '*gradle*'
+    exclude '**/build'
+    // destinationDir(file("$rootDir/zip"))
+}
+
+tasks.clean.dependsOn tasks.deleteNodeModules
+
+tasks.assemble.dependsOn tasks.makeZipOfNodeModule
+tasks.makeZipOfNodeModule.dependsOn tasks.npmInstall
+tasks.npmInstall.dependsOn tasks.nodeSetup
+
+_____________ _____________ _____________ _____________ _____________
+
+JAVA-MODULE build.gradle
+
+
+
+_____________ _____________ _____________ _____________ _____________
